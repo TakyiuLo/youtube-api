@@ -47,10 +47,17 @@ let oauth2Client
 router.get('/permissionUrl', requireToken, (req, res) => {
   console.log('req', req.headers)
 
+  let redirectUri = req.headers.origin + '/oauthcallback'
+
+  console.log('req.headers.origin: ', req.headers.origin)
+  if (req.headers.origin !== 'http://localhost:7165') {
+    redirectUri = 'https://takyiulo.github.io/youtube-client/oauthcallback'
+  }
+
   oauth2Client = new google.auth.OAuth2(
     OAUTH_YOUTUBEX_CLIENT_ID,
     OAUTH_CLIENT_SECRET,
-    req.headers.origin + '/oauthcallback'
+    redirectUri
   )
 
   const url = oauth2Client.generateAuthUrl({
