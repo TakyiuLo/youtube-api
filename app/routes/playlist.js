@@ -66,6 +66,7 @@ router.get('/permissionUrl', requireToken, (req, res) => {
   res.status(200).json({ url })
 })
 
+// POST
 router.post('/grantAccess', requireToken, (req, res) => {
   // console.log('Code is: ', req.body)
   // req.body.code = req.body && req.body.code.replace('%2', '/')
@@ -147,7 +148,6 @@ router.post('/grantAccess', requireToken, (req, res) => {
 })
 
 // INDEX
-// GET /profiles
 router.post('/playlist', requireToken, (req, res) => {
   Profile.find({owner: req.user._id})
     .then(profiles => {
