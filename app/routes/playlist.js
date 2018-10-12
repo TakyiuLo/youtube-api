@@ -13,9 +13,6 @@ const Profile = require('../models/profile')
 // using axios for requests
 const axios = require('axios')
 
-// using fetch for requests
-const fetch = require('isomorphic-fetch')
-
 // we'll use this to intercept any errors that get thrown and send them
 // back to the client with the appropriate status code
 const handle = require('../../lib/error_handler')
@@ -30,9 +27,9 @@ const router = express.Router()
 
 const { google } = require('googleapis')
 
-const YOUTBUBE_API_KEY = 'AIzaSyC538qBiNm3nwyQiHOh_JHXlyNfNVbaXJo'
-const OAUTH_YOUTUBEX_CLIENT_ID = '764661359543-n2qabfr1fail5ug7r3n5jsje47s4o51b.apps.googleusercontent.com'
-const OAUTH_CLIENT_SECRET = '3fVBJ5Sr_Rfe9xN4-t9jNsi2'
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY
+const OAUTH_YOUTUBEX_CLIENT_ID = process.env.OAUTH_YOUTUBEX_CLIENT_ID
+const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET
 var SCOPES = ['https://www.googleapis.com/auth/youtube']
 
 console.log(process.env.YOUTBUBE_API_KEY)
@@ -158,11 +155,11 @@ router.post('/playlist', requireToken, (req, res) => {
       // we want to convert each one to a POJO, so we use `.map` to
       // apply `.toObject` to each one
       console.log('profiles[0].channelId: ', profiles[0].channelId)
-      console.log('Youtube API Key: ', YOUTBUBE_API_KEY)
+      console.log('Youtube API Key: ', YOUTUBE_API_KEY)
       console.log('Token received is: ', req.body.token)
       const config = {
         method: 'GET',
-        url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=50&mine=true&key=${YOUTBUBE_API_KEY}`,
+        url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=50&mine=true&key=${YOUTUBE_API_KEY}`,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Authorization': `Bearer ${req.body.token}`
