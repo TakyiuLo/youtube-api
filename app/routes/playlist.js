@@ -29,12 +29,10 @@ const requireToken = passport.authenticate('bearer', { session: false })
 const router = express.Router()
 
 const { google } = require('googleapis')
-const userId = 'RheFIY3RUxYiJXlwyklbZQ'
-const channelId = 'UCRheFIY3RUxYiJXlwyklbZQ'
+
 const YOUTBUBE_API_KEY = 'AIzaSyC538qBiNm3nwyQiHOh_JHXlyNfNVbaXJo'
 const OAUTH_YOUTUBEX_CLIENT_ID = '764661359543-n2qabfr1fail5ug7r3n5jsje47s4o51b.apps.googleusercontent.com'
 const OAUTH_CLIENT_SECRET = '3fVBJ5Sr_Rfe9xN4-t9jNsi2'
-const DISCOVERY_DOCS = 'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest'
 var SCOPES = ['https://www.googleapis.com/auth/youtube']
 
 console.log(process.env.YOUTBUBE_API_KEY)
@@ -180,11 +178,16 @@ router.post('/playlist', requireToken, (req, res) => {
     // respond with status 200 and JSON of the profiles
     .then((response) => {
       console.log('response.body', response.data)
-      // const playlists = JSON.parse(response.data.items)
-      // playlists = playlists.map((playlist) => {
-      //   playlist.
-      // })
-      // console.log()
+      const playlists = response.data.items
+      const filteredPlaylists = []
+      playlists.map((playlist) => {
+        const tmpPlaylistItem = {}
+        tmpPlaylistItem.id = playlist.id
+        tmpPlaylistItem.title = playlist.snippet.title
+        filteredPlaylists.push(tmpPlaylistItem)
+      })
+      console.log('filteredPlaylists: ', filteredPlaylists)
+      response.data.filteredPlaylists = filteredPlaylists
       return response
     })
     .then(response => res.status(201).json({ data: response.data }))
