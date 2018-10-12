@@ -2,8 +2,8 @@
 This is the backend and API repo for project YoutubeX.
 
 # Planning
-ok 1 user can crud channel id
-uncheck 2 users can receive their private playlist
+- check 1 user can crud channel id
+- uncheck 2 users can receive their private playlist
 
 # Process
 It took me about 3 days to understand OAuth and get back a token. So everytime
@@ -54,7 +54,7 @@ Version Two:
 - Add more route for management on the playlist
 
 # References
-[Frontend Github](https://github.com/TakyiuLo/youtube-client)
-[Frontend Deploy Site](https://takyiulo.github.io/youtube-client/)
-[Backend Github](https://github.com/TakyiuLo/youtube-api)
-[Backend Deploy Site](https://sheltered-fortress-64728.herokuapp.com/)
+- [Frontend Github](https://github.com/TakyiuLo/youtube-client)
+- [Frontend Deploy Site](https://takyiulo.github.io/youtube-client/)
+- [Backend Github](https://github.com/TakyiuLo/youtube-api)
+- [Backend Deploy Site](https://sheltered-fortress-64728.herokuapp.com/)
