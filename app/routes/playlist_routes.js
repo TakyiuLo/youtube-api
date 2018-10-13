@@ -32,7 +32,7 @@ const OAUTH_YOUTUBEX_CLIENT_ID = process.env.OAUTH_YOUTUBEX_CLIENT_ID
 const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET
 var SCOPES = ['https://www.googleapis.com/auth/youtube']
 
-console.log(process.env.YOUTBUBE_API_KEY)
+console.log(process.env.YOUTUBE_API_KEY)
 console.log(process.env.OAUTH_YOUTUBEX_CLIENT_ID)
 
 let oauth2Client
