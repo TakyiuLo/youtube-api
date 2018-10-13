@@ -45,8 +45,10 @@ router.get('/permissionUrl', requireToken, (req, res) => {
   let basename = ''
 
   console.log('req.headers.origin: ', req.headers.origin)
+
+  // Testing for development or production environemnt
   if (req.headers.origin !== 'http://localhost:7165') {
-    basename = '/youtube-client'
+    basename = '/youtube-client/#/'
   }
 
   let redirectUri = req.headers.origin + basename + '/oauthcallback'
@@ -59,7 +61,7 @@ router.get('/permissionUrl', requireToken, (req, res) => {
 
   const url = oauth2Client.generateAuthUrl({
     // 'online' (default) or 'offline' (gets refresh_token)
-    access_type: 'online',
+    access_type: 'offline',
     // If you only need one scope you can pass it as a string
     scope: SCOPES
   })
