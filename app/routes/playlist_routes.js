@@ -48,7 +48,7 @@ router.get('/permissionUrl', requireToken, (req, res) => {
 
   // Testing for development or production environemnt
   if (req.headers.origin !== 'http://localhost:7165') {
-    basename = '/youtube-client/#'
+    basename = '/youtube-client'
   }
 
   let redirectUri = req.headers.origin + basename + '/oauthcallback'
