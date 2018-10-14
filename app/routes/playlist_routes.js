@@ -12,6 +12,8 @@ const Profile = require('../models/profile')
 
 // using axios for requests
 const axios = require('axios')
+// using `qs` library
+const qs = require('qs')
 
 // we'll use this to intercept any errors that get thrown and send them
 // back to the client with the appropriate status code
@@ -142,20 +144,56 @@ router.post('/grantAccess', requireToken, (req, res) => {
   if (req.headers.origin !== 'http://localhost:7165') {
     basename = '/youtube-client'
   }
+  // const config = {
+  //   method: 'POST',
+  //   url: `https://www.googleapis.com/oauth2/v4/token?code=${req.body.code}&client_id=${OAUTH_YOUTUBEX_CLIENT_ID}&client_secret=${OAUTH_CLIENT_SECRET}&redirect_uri=${req.headers.origin + basename + '?redirect=oauthcallback'}&grant_type=authorization_code`,
+  //   headers: {
+  //     'Content-Type': 'application/x-www-form-urlencoded'
+  //   }
+  // }
+  // const config = {
+  //   method: 'POST',
+  //   url: 'https://www.googleapis.com/oauth2/v4/token?' +
+  //   qs.stringify({
+  //     code: req.body.code,
+  //     client_id: OAUTH_YOUTUBEX_CLIENT_ID,
+  //     client_secret: OAUTH_CLIENT_SECRET,
+  //     redirect_uri: req.headers.origin + basename + '?redirect=oauthcallback',
+  //     grant_type: 'authorization_code'
+  //   }, { encode: false }),
+  //   headers: {
+  //     'Content-Type': 'application/x-www-form-urlencoded'
+  //   }
+  // }
   const config = {
     method: 'POST',
-    url: `https://www.googleapis.com/oauth2/v4/token?code=${req.body.code}&client_id=${OAUTH_YOUTUBEX_CLIENT_ID}&client_secret=${OAUTH_CLIENT_SECRET}&redirect_uri=${req.headers.origin + basename + '?redirect=oauthcallback'}&grant_type=authorization_code`,
+    url: 'https://www.googleapis.com/oauth2/v4/token',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    params: {
+      code: req.body.code,
+      client_id: OAUTH_YOUTUBEX_CLIENT_ID,
+      client_secret: OAUTH_CLIENT_SECRET,
+      redirect_uri: req.headers.origin + basename + '?redirect=oauthcallback',
+      grant_type: 'authorization_code'
+    },
+    paramsSerializer: function (params) {
+      return qs.stringify(params, { encode: false })
     }
   }
   console.log('url', config.url)
-  axios.request(config)
+  axios(config)
     .then((response) => {
       console.log('Token is sent back to user')
       res.status(200).json({ data: response.data })
     })
-    .catch(() => res.status(400).json({ message: 'Unable to retreive TOKEN' }))
+    .catch((err) => {
+      // delete err.response['headers']
+      // delete err.response['request']
+      console.log('err.response', err.response, err.response.data)
+      res.status(err.response.status).json({ message: err.response.data.error_description })
+    })
 })
 
 // INDEX
@@ -168,12 +206,30 @@ router.post('/playlist', requireToken, (req, res) => {
       console.log('profiles[0].channelId: ', profiles[0].channelId)
       console.log('Youtube API Key: ', YOUTUBE_API_KEY)
       console.log('Token received is: ', req.body.token)
+      // const config = {
+      //   method: 'GET',
+      //   url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=50&mine=true&key=${YOUTUBE_API_KEY}`,
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded',
+      //     'Authorization': `Bearer ${req.body.token}`
+      //   }
+      // }
       const config = {
         method: 'GET',
-        url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=50&mine=true&key=${YOUTUBE_API_KEY}`,
+        url: 'https://www.googleapis.com/youtube/v3/playlists',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Authorization': `Bearer ${req.body.token}`
+        },
+        params: {
+          /* Make sure you don't have space between snippet and contentDetails */
+          part: 'snippet,contentDetails',
+          maxResults: 50,
+          mine: true,
+          key: YOUTUBE_API_KEY
+        },
+        paramsSerializer: function (params) {
+          return qs.stringify(params, { encode: false })
         }
       }
       // return Promise.all([...profiles.map(profile => {
