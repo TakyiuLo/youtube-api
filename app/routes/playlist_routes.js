@@ -53,6 +53,7 @@ router.get('/permissionUrl', requireToken, (req, res) => {
 
   // let redirectUri = req.headers.origin + basename + '/oauthcallback'
   let redirectUri = req.headers.origin + basename + '?redirect=oauthcallback'
+  console.log('redirectUri', redirectUri)
   oauth2Client = new google.auth.OAuth2(
     OAUTH_YOUTUBEX_CLIENT_ID,
     OAUTH_CLIENT_SECRET,
@@ -73,7 +74,7 @@ router.get('/permissionUrl', requireToken, (req, res) => {
 // POST
 router.post('/grantAccess', requireToken, (req, res) => {
   // console.log('Code is: ', req.body)
-  req.body.code = req.body && req.body.code.replace('%2', '/')
+  // req.body.code = req.body && req.body.code.replace('%2', '/')
   // oauth2Client not working
   // const setCredentials = function ({ tokens }) {
   //   oauth2Client.setCredentials(tokens)
@@ -136,13 +137,19 @@ router.post('/grantAccess', requireToken, (req, res) => {
   // /** * MAKE SURE TO REPLACE SPACES * **/
   // config.url = config.url.replace(/(\s|\t|\n|\r|\r\n)/g, '')
   console.log('Code is: ', req.body.code)
+  // Testing for development or production environemnt
+  let basename = ''
+  if (req.headers.origin !== 'http://localhost:7165') {
+    basename = '/youtube-client'
+  }
   const config = {
     method: 'POST',
-    url: `https://www.googleapis.com/oauth2/v4/token?code=${req.body.code}&client_id=${OAUTH_YOUTUBEX_CLIENT_ID}&client_secret=${OAUTH_CLIENT_SECRET}&redirect_uri=${req.headers.origin + '/oauthcallback'}&grant_type=authorization_code`,
+    url: `https://www.googleapis.com/oauth2/v4/token?code=${req.body.code}&client_id=${OAUTH_YOUTUBEX_CLIENT_ID}&client_secret=${OAUTH_CLIENT_SECRET}&redirect_uri=${req.headers.origin + basename + '?redirect=oauthcallback'}&grant_type=authorization_code`,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
   }
+  console.log('url', config.url)
   axios.request(config)
     .then((response) => {
       console.log('Token is sent back to user')
