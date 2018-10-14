@@ -45,8 +45,13 @@ Version One:
 Profile
 | GET    | `/profiles`            | `profile#index`   |
 | POST   | `/profiles`            | `profile#create`  |
-| PATCH  | `//profiles/:id'`      | `profile#update`  |
-| DELETE | `//profiles/:id'`      | `profile#delete`  |
+| PATCH  | `/profiles/:id'`       | `profile#update`  |
+| DELETE | `/profiles/:id'`       | `profile#delete`  |
+Playlist
+| GET    | `/permissionUrl`       | `playlist#permissionUrl` |
+| POST   | `/grantAccess`         | `playlist#grantAccess`   |
+| GET    | `/playlist`            | `playlist#playlist`      |
+
 
 # Future Planning
 Version Two:
