@@ -51,8 +51,8 @@ router.get('/permissionUrl', requireToken, (req, res) => {
     basename = '/youtube-client'
   }
 
-  let redirectUri = req.headers.origin + basename + '/oauthcallback'
-
+  // let redirectUri = req.headers.origin + basename + '/oauthcallback'
+  let redirectUri = req.headers.origin + basename + '?redirect=oauthcallback'
   oauth2Client = new google.auth.OAuth2(
     OAUTH_YOUTUBEX_CLIENT_ID,
     OAUTH_CLIENT_SECRET,
@@ -73,7 +73,7 @@ router.get('/permissionUrl', requireToken, (req, res) => {
 // POST
 router.post('/grantAccess', requireToken, (req, res) => {
   // console.log('Code is: ', req.body)
-  // req.body.code = req.body && req.body.code.replace('%2', '/')
+  req.body.code = req.body && req.body.code.replace('%2', '/')
   // oauth2Client not working
   // const setCredentials = function ({ tokens }) {
   //   oauth2Client.setCredentials(tokens)
