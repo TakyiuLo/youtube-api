@@ -39,7 +39,7 @@ Version One:
 # Document Diagram
 [Imgur](https://i.imgur.com/N2bvOte.png)
 
-# Profiles
+# Patterns
 | Verb   | URI Pattern            | Controller#Action |
 |--------|------------------------|-------------------|
 Profile
