@@ -68,103 +68,19 @@ router.get('/permissionUrl', requireToken, (req, res) => {
     // If you only need one scope you can pass it as a string
     scope: SCOPES
   })
-  // const url = `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/youtube&access_type=online&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri=${req.headers.origin + '/oauthcallback'}&response_type=code&client_id=${OAUTH_YOUTUBEX_CLIENT_ID}`
   // send back url for consent
   res.status(200).json({ url })
 })
 
 // POST
-router.post('/grantAccess', requireToken, (req, res) => {
-  // console.log('Code is: ', req.body)
-  // req.body.code = req.body && req.body.code.replace('%2', '/')
-  // oauth2Client not working
-  // const setCredentials = function ({ tokens }) {
-  //   oauth2Client.setCredentials(tokens)
-  //   // Below is for 'offline' token 
-  //   // oauth2Client.on('tokens', (tokens) => {
-  //   //   if (tokens.refresh_token) {
-  //   //     // store the refresh_token in my database!
-  //   //     console.log(tokens.refresh_token)
-  //   //   }
-  //   //   console.log(tokens.access_token)
-  //   // })
-  //   console.log('tokens', tokens)
-  //   res.status(200).json({ message: 'Access Granted' })
-  // }
-  // try {
-  //   oauth2Client.getToken(req.body.code)
-  //     .then((res) => {
-  //       oauth2Client.setCredentials(res.tokens)
-  //     })
-  //     .then(() => res.sendStatus(204))
-  //     .catch(() => console.log('Error! ! ! ! !'))
-  // } catch (e) {
-  //   handle(e, res)
-  // }
-  // set credentials
-  // oauth2Client.getToken(req.body.code)
-  //   .then((value) => {
-  //     console.log('value', value)
-
-  //     // res.status(200).json({ message: 'Access Granted' })
-  //   })
-  //   .catch(err => handle(err, res))
-  // 
-  // const config = {
-  //   url: 'https://www.googleapis.com/oauth2/v4/token',
-  //   headers: {
-  //     'Content-Type': 'application/x-www-form-urlencoded'
-  //   },
-  //   params: {
-  //     code: code,
-  //     client_id: OAUTH_YOUTUBEX_CLIENT_ID,
-  //     client_secret: OAUTH_CLIENT_SECRET,
-  //     redirect_uri: req.headers.origin + '/oauthcallback',
-  //     grant_type: 'authorization_code'
-  //   }
-  // }
-  // const config = {
-  //   method: 'POST',
-  //   url: `https://www.googleapis.com/oauth2/v4/token?
-  //   code=${req.body.code}
-  //   &client_id=${OAUTH_YOUTUBEX_CLIENT_ID}
-  //   &client_secret=${OAUTH_CLIENT_SECRET}
-  //   &redirect_uri=${req.headers.origin + '/oauthcallback'}
-  //   &grant_type=authorization_code`,
-  //   headers: {
-  //     'Content-Type': 'application/x-www-form-urlencoded'
-  //   }
-  // }
-  // console.log('console.url', config.url)
-  // /** * MAKE SURE TO REPLACE SPACES * **/
-  // config.url = config.url.replace(/(\s|\t|\n|\r|\r\n)/g, '')
+router.post('/grantAccess', (req, res) => {
   console.log('Code is: ', req.body.code)
   // Testing for development or production environemnt
   let basename = ''
   if (req.headers.origin !== 'http://localhost:7165') {
     basename = '/youtube-client'
   }
-  // const config = {
-  //   method: 'POST',
-  //   url: `https://www.googleapis.com/oauth2/v4/token?code=${req.body.code}&client_id=${OAUTH_YOUTUBEX_CLIENT_ID}&client_secret=${OAUTH_CLIENT_SECRET}&redirect_uri=${req.headers.origin + basename + '?redirect=oauthcallback'}&grant_type=authorization_code`,
-  //   headers: {
-  //     'Content-Type': 'application/x-www-form-urlencoded'
-  //   }
-  // }
-  // const config = {
-  //   method: 'POST',
-  //   url: 'https://www.googleapis.com/oauth2/v4/token?' +
-  //   qs.stringify({
-  //     code: req.body.code,
-  //     client_id: OAUTH_YOUTUBEX_CLIENT_ID,
-  //     client_secret: OAUTH_CLIENT_SECRET,
-  //     redirect_uri: req.headers.origin + basename + '?redirect=oauthcallback',
-  //     grant_type: 'authorization_code'
-  //   }, { encode: false }),
-  //   headers: {
-  //     'Content-Type': 'application/x-www-form-urlencoded'
-  //   }
-  // }
+
   const config = {
     method: 'POST',
     url: 'https://www.googleapis.com/oauth2/v4/token',
@@ -186,7 +102,7 @@ router.post('/grantAccess', requireToken, (req, res) => {
   axios(config)
     .then((response) => {
       console.log('Token is sent back to user')
-      res.status(200).json({ data: response.data })
+      res.status(200).json({ token: response.data })
     })
     .catch((err) => {
       // delete err.response['headers']
@@ -198,7 +114,7 @@ router.post('/grantAccess', requireToken, (req, res) => {
     })
 })
 
-// INDEX
+// GET Playlist
 router.post('/playlist', requireToken, (req, res) => {
   // didn't use get here because I wanted to pass data to here
   Profile.find({owner: req.user._id})
@@ -208,14 +124,7 @@ router.post('/playlist', requireToken, (req, res) => {
       // apply `.toObject` to each one
       console.log('Youtube API Key: ', YOUTUBE_API_KEY)
       console.log('Token received is: ', req.body.token)
-      // const config = {
-      //   method: 'GET',
-      //   url: `https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=50&mine=true&key=${YOUTUBE_API_KEY}`,
-      //   headers: {
-      //     'Content-Type': 'application/x-www-form-urlencoded',
-      //     'Authorization': `Bearer ${req.body.token}`
-      //   }
-      // }
+
       const config = {
         method: 'GET',
         url: 'https://www.googleapis.com/youtube/v3/playlists',
@@ -234,11 +143,6 @@ router.post('/playlist', requireToken, (req, res) => {
           return qs.stringify(params, { encode: false })
         }
       }
-      // return Promise.all([...profiles.map(profile => {
-      //   axios.request(config)
-      // })])
-      // return fetch(`https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&channelId=${profiles[0].channelId}&maxResults=25&key=${YOUTBUBE_API_KEY}`)
-      // return fetch(`https://www.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&channelId=UC_x5XG1OV2P6uZZ5FSM9Ttw&maxResults=25&key=AIzaSyC538qBiNm3nwyQiHOh_JHXlyNfNVbaXJo`)
       return axios.request(config)
     })
     // respond with status 200 and JSON of the profiles
@@ -256,7 +160,7 @@ router.post('/playlist', requireToken, (req, res) => {
       response.data.filteredPlaylists = filteredPlaylists
       return response
     })
-    .then(response => res.status(201).json({ data: response.data }))
+    .then(response => res.status(201).json({ playlist: response.data }))
     // if an error occurs, pass it to the handler
     .catch((err) => {
       // console.log('Fail to retreive playlist: ', err)
