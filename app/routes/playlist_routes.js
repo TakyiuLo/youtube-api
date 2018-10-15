@@ -192,18 +192,20 @@ router.post('/grantAccess', requireToken, (req, res) => {
       // delete err.response['headers']
       // delete err.response['request']
       console.log('err.response', err.response, err.response.data)
-      res.status(err.response.status).json({ message: err.response.data.error_description })
+      res.status(err.response.status).json({
+        message: err.response.data.error_description || err.response.statusText
+      })
     })
 })
 
 // INDEX
 router.post('/playlist', requireToken, (req, res) => {
+  // didn't use get here because I wanted to pass data to here
   Profile.find({owner: req.user._id})
     .then(profiles => {
       // `profiles` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
       // apply `.toObject` to each one
-      console.log('profiles[0].channelId: ', profiles[0].channelId)
       console.log('Youtube API Key: ', YOUTUBE_API_KEY)
       console.log('Token received is: ', req.body.token)
       // const config = {
@@ -256,9 +258,9 @@ router.post('/playlist', requireToken, (req, res) => {
     })
     .then(response => res.status(201).json({ data: response.data }))
     // if an error occurs, pass it to the handler
-    .catch(() => {
-      console.log('Fail to retreive playlist: ')
-      res.status(400).json({ message: 'Unable to retreive playlist' })
+    .catch((err) => {
+      // console.log('Fail to retreive playlist: ', err)
+      res.status(err.response.status).json({ message: err.response.statusText })
     })
 })
 
