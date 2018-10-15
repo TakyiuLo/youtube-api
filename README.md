@@ -25,9 +25,6 @@ It was tedious. But in the end, I manage to have a success with it.
 - Google APIs
 - Youtube API
 
-# Wireframe:
-[Imgur](https://i.imgur.com/uruqTvm.png)
-
 # User Stories
 Version One:
 - User are able to do CRUD on `/sign-up`, `/sign-in`, `change-password`, 
@@ -37,7 +34,7 @@ Version One:
 - `/permissionUrl`, `/grantAccess`, `/playlist`
 
 # Document Diagram
-[Imgur](https://i.imgur.com/N2bvOte.png)
+![Imgur](https://i.imgur.com/N2bvOte.png)
 
 # Patterns
 | Verb   | URI Pattern            | Controller#Action |
