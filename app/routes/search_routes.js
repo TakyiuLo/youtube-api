@@ -40,6 +40,7 @@ router.get('/search', (req, res) => {
       part: 'snippet',
       maxResults: 12,
       q: req.query.q.replace(' ', '+'),
+      type: 'video',
       key: YOUTUBE_API_KEY
     },
     paramsSerializer: function (params) {
