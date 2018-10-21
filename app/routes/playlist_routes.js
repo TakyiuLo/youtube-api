@@ -42,7 +42,7 @@ let oauth2Client
 // SHOW
 // GET /permissionUrl
 router.get('/permissionUrl', requireToken, (req, res) => {
-  console.log('req', req.headers)
+  console.log('/permissionUrl ...')
 
   let basename = ''
 
@@ -101,13 +101,15 @@ router.post('/grantAccess', (req, res) => {
   console.log('url', config.url)
   axios(config)
     .then((response) => {
-      console.log('Token is sent back to user')
+      console.log('Token has sent back to user')
       res.status(200).json({ token: response.data })
     })
     .catch((err) => {
       // delete err.response['headers']
       // delete err.response['request']
-      console.log('err.response', err.response, err.response.data)
+      console.log('err.response',
+        JSON.stringify(err.response),
+        JSON.stringify(err.response.data))
       res.status(err.response.status).json({
         message: err.response.data.error_description || err.response.statusText
       })
@@ -115,7 +117,7 @@ router.post('/grantAccess', (req, res) => {
 })
 
 // GET Playlist
-router.post('/playlist', requireToken, (req, res) => {
+router.post('/playlists', requireToken, (req, res) => {
   // didn't use get here because I wanted to pass data to here
   Profile.find({owner: req.user._id})
     .then(profiles => {
@@ -129,7 +131,7 @@ router.post('/playlist', requireToken, (req, res) => {
         method: 'GET',
         url: 'https://www.googleapis.com/youtube/v3/playlists',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencode',
           'Authorization': `Bearer ${req.body.token}`
         },
         params: {
@@ -147,7 +149,6 @@ router.post('/playlist', requireToken, (req, res) => {
     })
     // respond with status 200 and JSON of the profiles
     .then((response) => {
-      console.log('response.body', response.data)
       const playlists = response.data.items
       const filteredPlaylists = []
       playlists.map((playlist) => {
@@ -165,6 +166,48 @@ router.post('/playlist', requireToken, (req, res) => {
     .catch((err) => {
       // console.log('Fail to retreive playlist: ', err)
       res.status(err.response.status).json({ message: err.response.statusText })
+    })
+})
+
+// POST to a playlist
+router.post('/addToPlaylist', requireToken, (req, res) => {
+  // console.log('req', req.headers)
+
+  const config = {
+    method: 'POST',
+    url: 'https://www.googleapis.com/youtube/v3/playlistItems',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${req.body.token}`
+    },
+    params: {
+      /* Make sure you don't have space between snippet and contentDetails */
+      part: 'snippet',
+      key: YOUTUBE_API_KEY
+    },
+    paramsSerializer: function (params) {
+      return qs.stringify(params, { encode: false })
+    },
+    data: JSON.stringify({
+      snippet: {
+        playlistId: req.body.playlistId,
+        resourceId: {
+          kind: 'youtube#video',
+          videoId: req.body.videoId
+        }
+      }
+    })
+  }
+  console.log('trying to addToPlaylist with', req.body)
+  axios(config)
+    .then((response) => {
+      console.log('successfully added to playlist')
+      res.status(200).json({ message: 'successfully added to playlist' })
+    })
+    .catch((err) => {
+      const response = err.response
+      console.log(JSON.stringify(response.data))
+      res.status(response.status).json({ message: response.data.error.message })
     })
 })
 
