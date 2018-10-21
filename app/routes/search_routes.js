@@ -38,13 +38,14 @@ router.get('/search', (req, res) => {
     params: {
       /* Make sure you don't have space between snippet and contentDetails */
       part: 'snippet',
+      safeSearch: 'none',
       maxResults: 12,
       q: req.query.q.replace(' ', '+'),
       type: 'video',
       key: YOUTUBE_API_KEY
     },
     paramsSerializer: function (params) {
-      return qs.stringify(params, { encode: false })
+      return qs.stringify(params, { encode: true })
     }
   }
 
@@ -54,8 +55,8 @@ router.get('/search', (req, res) => {
       res.status(200).json({ result: response.data })
     })
     .catch((err) => {
-      console.log(err.response)
-      res.status(err.response.status).json({ message: err.response.statusText })
+      console.log(err)
+      res.status(400).json({ message: 'fail to search' })
     })
 })
 
